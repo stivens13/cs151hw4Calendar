@@ -8,10 +8,10 @@ public class CalendarTester {
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
         JPanel calendar = new StudentCalendar();
-        calendar.setLayout(new BorderLayout());
+//        calendar.setLayout(new BorderLayout());
         frame.add(calendar);
 //        frame.pack();
-        frame.setSize(new Dimension(1000, 700));
+        frame.setSize(new Dimension(700, 700));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
