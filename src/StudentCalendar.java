@@ -22,7 +22,13 @@ public class StudentCalendar extends JPanel {
 
         setLayout(new BorderLayout());
 
-        JPanel leftPanel = new JPanel(new FlowLayout());
+        init();
+    }
+
+    public void init() { //Graphics2D g2) {
+
+        JPanel leftPanel = new JPanel(new BorderLayout());
+//        JPanel leftPanel = new JPanel(new FlowLayout());
         JPanel monthView = new JPanel(new GridLayout(6, 6, 1, 1));
 
 //        Shape shape = new Rectangle2D.Double(0, 0, 100, 100);
@@ -30,7 +36,17 @@ public class StudentCalendar extends JPanel {
         setMonthView(monthView);
         monthView.setPreferredSize(new Dimension(150, 150));
 
-        leftPanel.add(monthView);
+//        JButton button = new JButton("CREATE");
+//        button.setSize(new Dimension(50, 30));
+//        button.setBackground(Color.RED);
+//        button.setForeground(Color.GRAY);
+//        button.setOpaque(true);
+
+        JLabel button = getButton("CREATE", Color.RED, Color.WHITE);
+
+//        leftPanel.setSize(new Dimension(150, 80));
+        leftPanel.add(button  , BorderLayout.NORTH );
+        leftPanel.add(monthView    , BorderLayout.CENTER );
 
         JPanel upperPanel = new JPanel(new FlowLayout());
         upperPanel.setPreferredSize(new Dimension( 700, 50));
@@ -60,4 +76,25 @@ public class StudentCalendar extends JPanel {
 
         }
     }
+
+    public JLabel getButton(String text, Color background, Color foregroung) { //}, int x, int y) {
+
+        JLabel button = new JLabel(text);
+        button.setBackground(background);
+        button.setForeground(foregroung);
+        button.setSize(new Dimension(150, 20));
+        button.setHorizontalAlignment(SwingConstants.CENTER);
+        button.setOpaque(true);
+        return button;
+//        g2.draw(new Rectangle2D.Double(x, y, 100, 20));
+    }
+//
+//    public void paintComponent(Graphics g) {
+//
+//        super.paintComponent(g);
+//
+//        Graphics2D g2 = (Graphics2D) g;
+//
+//        init(g2);
+//    }
 }
