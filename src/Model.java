@@ -1,5 +1,6 @@
 import java.io.*;
 import java.nio.file.Files;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -9,6 +10,7 @@ public class Model {
     private Calendar cal;
 
     public static final String FORMAT1 = "MM/dd/yy";
+    public static final String FORMAT2 = "MM/dd/yy:HH:mm";
 
     public Model() {
         cal = new GregorianCalendar();
@@ -42,7 +44,8 @@ public class Model {
 
     public boolean checkConflict(String date, String start, String end) {
         for(Event event: events.values()) {
-            if(event.checkConflict(start, end) && event.getDate().equals(date))
+            String eventDate = event.getDate();
+            if(event.checkConflict(start, end) && eventDate.equals(date))
                 return true;
         }
 
@@ -54,7 +57,19 @@ public class Model {
     }
 
     public void createEvent(String _title, String _date, String start, String end ) {
+        SimpleDateFormat format = new SimpleDateFormat(FORMAT2);
+        Calendar calendar = new GregorianCalendar();
 
+        try {
+            calendar.setTime(format.parse(_date + ":" + start ));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Event event = new Event(_title, _date, start + "-" + end, calendar.getTimeInMillis());
+
+        events.put(String.valueOf( cal.getTimeInMillis() ), event);
+        System.out.println(event.toString());
     }
 
     public String getToday() {
@@ -67,6 +82,10 @@ public class Model {
 
     public int getCurrentMonth() {
         return cal.get(Calendar.MONTH);
+    }
+
+    public void setDay(int day) {
+        cal.set(Calendar.DAY_OF_MONTH, day);
     }
 
     public String getDate() {
@@ -133,7 +152,7 @@ public class Model {
         String time;
         String title;
 
-
+        System.out.println("Came to save events");
         try (FileWriter fw = new FileWriter("events.txt", false);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {

@@ -5,11 +5,16 @@ public class CalendarTester {
 
     public static void main(String [] args) {
 
+        SwingUtilities.invokeLater(CalendarTester::startCalendar);
+    }
+
+    static void startCalendar() {
+
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
         Model model = new Model();
 //        JPanel calendar = new StudentCalendar(model);
-        JPanel calendar = new StudentCalendar(frame, model);
+        JPanel calendar = new StudentCalendar(model);
         setQuitButton(frame, calendar, model);
 //        calendar.setLayout(new BorderLayout());
         frame.add(calendar);

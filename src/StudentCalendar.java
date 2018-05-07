@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class StudentCalendar extends JPanel implements ChangeListener{
+public class StudentCalendar extends JPanel { //} implements ChangeListener{
 
     enum MONTHS {
         January, February, March, April, May, June, July, August, September, October, November, December
@@ -17,7 +17,7 @@ public class StudentCalendar extends JPanel implements ChangeListener{
         Sun, Mon, Tue, Wed, Thur, Fri, Sat,
     }
 
-    JFrame frame;
+//    JFrame frame;
     private Model model;
 
     private JButton quitButton;
@@ -40,19 +40,11 @@ public class StudentCalendar extends JPanel implements ChangeListener{
         init();
     }
 
-    public StudentCalendar(JFrame _frame, Model _model) {
 
-        model = _model;
-        frame = _frame;
-
-        currentDay = model.getCurrentDay();
-        currentMonth = model.getCurrentMonth();
-
-//        setLayout(new GridBagLayout());
-        setBackground(Color.WHITE);
-        setLayout(new BorderLayout());
-
+    public void updateView() {
+//        removeAll();
         init();
+//        revalidate();
     }
 
     @Override
@@ -62,13 +54,15 @@ public class StudentCalendar extends JPanel implements ChangeListener{
 //        Graphics2D g2 = (Graphics2D) g;
 
         init();
-//        repaint();
+////        repaint();
+//        revalidate();
     }
 
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        frame.repaint();
-    }
+//    @Override
+//    public void stateChanged(ChangeEvent e) {
+////        frame.repaint();
+//        update(g);
+//    }
 
 
     private void init() {
@@ -85,7 +79,7 @@ public class StudentCalendar extends JPanel implements ChangeListener{
 
         JPanel eventsPanel = new JPanel(); //new GridLayout(6, 1));
 //        JPanel eventsPanel = new JPanel();
-        setUpperViewPanel(upperPanel);
+        setUpperViewPanel();
         setEventsPanel(eventsPanel);
 
         add(upperPanel, BorderLayout.NORTH);
@@ -93,27 +87,27 @@ public class StudentCalendar extends JPanel implements ChangeListener{
         add(eventsPanel, BorderLayout.CENTER);
     }
 
-    private void setUpperViewPanel(JPanel upperPanel) {
+    private void setUpperViewPanel() {
 
         JButton leftButton = new JButton("<");
         JButton rightButton = new JButton(">");
 
         leftButton.addActionListener(e -> {
             model.moveToPrevDay();
+//            currentDay = model.getCurrentDay();
             if(currentMonth != model.getCurrentMonth()) {
                 currentMonth = model.getCurrentMonth();
             }
-            revalidate();
-            frame.repaint();
+            updateView();
         });
 
         rightButton.addActionListener(e -> {
             model.moveToNextDay();
+//            currentDay = model.getCurrentDay();
             if(currentMonth != model.getCurrentMonth()) {
                 currentMonth = model.getCurrentMonth();
             }
-            revalidate();
-            frame.repaint();
+            updateView();
         });
 
         quitButton = new JButton("Quit");
@@ -169,8 +163,6 @@ public class StudentCalendar extends JPanel implements ChangeListener{
 
         Calendar cal = new GregorianCalendar();
         cal.set(Calendar.DAY_OF_MONTH, 1);
-//        Calendar cal = model.getCal();
-        int thisMonth = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
         for(int k = 0; k < day; k++) {
             monthView.add(new JLabel(""));
@@ -185,8 +177,10 @@ public class StudentCalendar extends JPanel implements ChangeListener{
             buttonDay.addActionListener(e -> {
 //                model.setDate(currentMonth, currentDay);
                 currentDay = Integer.parseInt(buttonDay.getText());
-                System.out.println("Day " + buttonDay.getText() + " is pressed");
-                frame.repaint();
+                model.setDay(currentDay);
+                System.out.println("Day " + currentDay + " is pressed");
+//                frame.repaint();
+                updateView();
             });
             monthView.add( buttonDay);
             cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + 1);
@@ -239,14 +233,15 @@ public class StudentCalendar extends JPanel implements ChangeListener{
 
         ArrayList<Event> dayEvents = model.getDayEvents();
 
-        for(int c = 0; c < 6; c++) {
-            eventHolder = new JPanel(new FlowLayout());
+        for(int c = 6; c < 12; c++) {
+            eventHolder = new JPanel(new FlowLayout(FlowLayout.LEADING,1,2));
             JPanel timeCell = new JPanel();
             timeCell.add(new JLabel(c + "am"));
             JLabel eventTitle = new JLabel();
             for(Event event: dayEvents) {
                 if(event.getEventBegins() == c) {
-                    eventTitle.setText(event.getTime());
+                    eventTitle.setText(event.getTitle());
+                    break;
                 }
             }
 

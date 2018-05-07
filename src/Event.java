@@ -13,15 +13,19 @@ public class Event {
     private Integer eventBegins;
     private Integer eventEnds;
 
-    public static final String FORMAT1 = "MM/dd/yyyy";
-    public static final String FORMAT2 = "MM/dd/yyyy:HH:mm";
+    public static final String FORMAT1 = "MM/dd/yy";
+    public static final String FORMAT2 = "MM/dd/yy:HH:mm";
 
     public Event(String [] event) {
 
         calendar = new GregorianCalendar();
         format = new SimpleDateFormat( FORMAT1 );
 
-        try { calendar.setTimeInMillis( Long.parseLong( event[0] ) ) ; title = event[1];  time = event[2]; setTime(event[2]); }
+        try {
+            calendar.setTimeInMillis( Long.parseLong( event[0] ) ) ;
+            title = event[1];
+            time = event[2];
+            setTime(event[2]); }
         catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,7 +69,7 @@ public class Event {
         try {
             eventEnds = Integer.parseInt( temp[1].replaceAll(":", "") );
         } catch (Exception e) {
-            eventBegins = 0;
+            eventEnds = 0;
         }
     }
 
@@ -91,7 +95,7 @@ public class Event {
     }
 
     public Integer getEventBegins() {
-        return eventBegins;
+        return calendar.get(Calendar.HOUR_OF_DAY);
     }
 
     public Integer getEventEnds() {
@@ -107,15 +111,19 @@ public class Event {
      * @return true is there is no conflict
      */
     public boolean checkConflict(String timeBeg, String timeEnd) {
-        if(eventEnds == 0) return false;
+        try {
+            if(eventEnds == 0) return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String temp [] = time.split("-");
         int a, b;
         a = Integer.parseInt( timeBeg.replaceAll(":", "") );
         try {
             b = Integer.parseInt( timeEnd.replaceAll(":", "") );
             if(b == 0) {
-                return (a > eventBegins && a < eventEnds);
-            } else return (a > eventBegins && a < eventEnds) || (b > eventBegins && b < eventEnds);
+                return (a >= eventBegins && a <= eventEnds);
+            } else return (a >= eventBegins && a <= eventEnds) || (b >= eventBegins && b <= eventEnds);
         } catch (Exception e) {
             return (a > eventBegins && a < eventEnds);
         }
