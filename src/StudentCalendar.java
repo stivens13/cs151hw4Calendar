@@ -1,7 +1,5 @@
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,10 +19,10 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
     private Model model;
 
     private JButton quitButton;
-    JPanel upperPanel;
+    private JPanel upperPanel;
     JPanel leftPanel;
-    int currentMonth;
-    int currentDay;
+    private int currentMonth;
+    private int currentDay;
 
     public StudentCalendar(Model _model) {
 
@@ -37,13 +35,13 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
         setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
-        init();
+        draw();
     }
 
 
     public void updateView() {
 //        removeAll();
-        init();
+        draw();
 //        revalidate();
     }
 
@@ -53,7 +51,7 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
 
 //        Graphics2D g2 = (Graphics2D) g;
 
-        init();
+        draw();
 ////        repaint();
 //        revalidate();
     }
@@ -65,7 +63,7 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
 //    }
 
 
-    private void init() {
+    private void draw() {
 
         upperPanel = new JPanel(new FlowLayout());
         upperPanel.setPreferredSize(new Dimension( 700, 50));
@@ -78,13 +76,15 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
         setLeftViewPanel(leftPanel);
 
         JPanel eventsPanel = new JPanel(); //new GridLayout(6, 1));
-//        JPanel eventsPanel = new JPanel();
         setUpperViewPanel();
         setEventsPanel(eventsPanel);
 
+        JScrollPane scrollPane = new JScrollPane(eventsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         add(upperPanel, BorderLayout.NORTH);
         add(leftPanel, BorderLayout.WEST);
-        add(eventsPanel, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
+//        add(eventsPanel, BorderLayout.CENTER);
     }
 
     private void setUpperViewPanel() {
@@ -215,6 +215,9 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
         if(title == null) {
             System.out.println("Event creating canceled");
             return;
+        } else if(title.equals("")) {
+            JOptionPane.showMessageDialog(new JFrame(), "Please, type proper title");
+            createEvent();
         } else if(model.checkConflict(date.getText(), timeBegins.getText(), timeEnds.getText())) {
             JOptionPane.showMessageDialog(new JFrame(), "Time conflicts with another event, try different time.");
             createEvent();
@@ -229,11 +232,12 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
 
         eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
 
+
         JPanel eventHolder;
 
         ArrayList<Event> dayEvents = model.getDayEvents();
 
-        for(int c = 6; c < 12; c++) {
+        for(int c = 6; c < 24; c++) {
             eventHolder = new JPanel(new FlowLayout(FlowLayout.LEADING,1,2));
             JPanel timeCell = new JPanel();
             timeCell.add(new JLabel(c + "am"));
@@ -254,6 +258,7 @@ public class StudentCalendar extends JPanel { //} implements ChangeListener{
             eventsPanel.add(eventHolder);
         }
 
+        eventsPanel.setPreferredSize(new Dimension(500, 200));
         eventsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 

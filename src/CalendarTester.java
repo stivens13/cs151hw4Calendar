@@ -13,13 +13,10 @@ public class CalendarTester {
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
         Model model = new Model();
-//        JPanel calendar = new StudentCalendar(model);
         JPanel calendar = new StudentCalendar(model);
         setQuitButton(frame, calendar, model);
-//        calendar.setLayout(new BorderLayout());
         frame.add(calendar);
         frame.pack();
-//        frame.setSize(new Dimension(700, 700));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
