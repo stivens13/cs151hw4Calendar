@@ -1,10 +1,12 @@
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class StudentCalendar extends JPanel {
+public class StudentCalendar extends JPanel implements ChangeListener{
 
     enum MONTHS {
         January, February, March, April, May, June, July, August, September, October, November, December
@@ -16,9 +18,18 @@ public class StudentCalendar extends JPanel {
 
     private Model model;
 
+    private JButton quitButton;
+    JPanel upperPanel;
+    JPanel leftPanel;
+    int currentMonth;
+    int currentDay;
+
     public StudentCalendar() {
 
         model = new Model();
+
+        currentDay = model.getCurrentDay();
+        currentMonth = model.getCurrentMonth();
 
 //        setLayout(new GridBagLayout());
         setBackground(Color.WHITE);
@@ -27,32 +38,37 @@ public class StudentCalendar extends JPanel {
         init();
     }
 
-    public void init() {
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
-        GridBagConstraints c = new GridBagConstraints();
+//        Graphics2D g2 = (Graphics2D) g;
 
-        JPanel upperPanel = new JPanel(new FlowLayout());
+        init();
+//        repaint();
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        repaint();
+    }
+
+
+    private void init() {
+
+        upperPanel = new JPanel(new FlowLayout());
         upperPanel.setPreferredSize(new Dimension( 700, 50));
-        JLabel placeHolder = new JLabel("PLACEHOLDER");
-        upperPanel.add(placeHolder);
-//        c.weightx = 0.5;
-//        c.gridx = 0;
-//        c.gridy = 0;
-//        add(upperPanel, c);
+//        JLabel placeHolder = new JLabel("PLACEHOLDER");
+//        upperPanel.add(placeHolder);
 
 
         JPanel leftPanel = new JPanel();
 //        JPanel leftPanel = new JPanel(new GridBagLayout());
         setLeftViewPanel(leftPanel);
-//        c.fill = GridBagConstraints.EAST;
-//        c.weightx = 0.5;
-//        c.gridx = 1;
-//
-//        c.gridy = 0;
-//        add(leftPanel, c);
 
-        JPanel eventsPanel = new JPanel(new GridLayout(6, 1));
+        JPanel eventsPanel = new JPanel(); //new GridLayout(6, 1));
 //        JPanel eventsPanel = new JPanel();
+        setUpperViewPanel(upperPanel);
         setEventsPanel(eventsPanel);
 
         add(upperPanel, BorderLayout.NORTH);
@@ -60,34 +76,30 @@ public class StudentCalendar extends JPanel {
         add(eventsPanel, BorderLayout.CENTER);
     }
 
-    public void setEventsPanel(JPanel eventsPanel) {
+    private void setUpperViewPanel(JPanel upperPanel) {
 
-//        eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
-//        eventsPanel.setBackground(Color.lightGray);
-        JScrollPane scrollPane = new JScrollPane(eventsPanel);
-        JPanel eventHolder = new JPanel();
-//        eventHolder.setLayout(new BoxLayout(eventHolder, BoxLayout.Y_AXIS));
+        JButton leftButton = new JButton("<");
+        JButton rightButton = new JButton(">");
 
-        for(int c = 0; c < 6; c++) {
-//            eventHolder.add();
-//            eventsPanel.add(new JSeparator());
-            JLabel event = new JLabel(c + 5 + " am");
-            event.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            eventsPanel.add(event);
-            eventsPanel.add(new JLabel("PLACEHOLDER"));
-        }
+        leftButton.addActionListener(e -> {
+            model.moveToPrevDay();
+            repaint();
+        });
+        rightButton.addActionListener(e -> {
+            model.moveToNextDay();
+            repaint();
+        });
 
-        eventsPanel.setLayout(new GridLayout(6, 0));
-//        eventsPanel.setSize();
+        quitButton = new JButton("Quit");
 
-        eventsPanel.setMinimumSize(new Dimension(700 - 150, 150));
-        eventsPanel.setPreferredSize(new Dimension(700 - 150, 150));
-        eventsPanel.setMaximumSize(new Dimension(700 - 150, 500));
+        upperPanel.add(leftButton);
+        upperPanel.add(rightButton);
+        upperPanel.add(quitButton);
 
-        add(scrollPane, BorderLayout.CENTER);
+
     }
 
-    public void setLeftViewPanel(JPanel leftPanel) {
+    private void setLeftViewPanel(JPanel leftPanel) {
 
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
@@ -97,56 +109,30 @@ public class StudentCalendar extends JPanel {
         setMonthView(monthView);
         monthView.setPreferredSize(new Dimension(150, 150));
 
-//        JPanel buttonHolder = new JPanel(new BorderLayout());
-//        JLabel button = getButton("CREATE", Color.RED, Color.WHITE);
-//        buttonHolder.add(button, BorderLayout.CENTER);
-//        buttonHolder.setSize(new Dimension(40, 20));
 
-
-        JButton button = new JButton("CREATE");
+        JButton button = new JButton("CREATE EVENT");
         button.setBackground(Color.RED);
         button.setForeground(Color.WHITE);
         button.setOpaque(true);
         button.setBorderPainted(false);
-//        button.setHorizontalAlignment(Component.LEFT_ALIGNMENT);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        button.addActionListener(e -> System.out.println("Create pressed"));
-
-//        buttonHolder.setBorder(BorderFactory.createEmptyBorder(0,40,0,40));
-
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        c.weightx = 0.5;
-//        c.gridwidth = 1;
-//        c.gridx = 0;
-//        c.gridy = 0;
-//        c.ipady = 40;
-//        c.ipadx = 10;
-
-//        leftPanel.add(buttonHolder, c);
+        button.addActionListener(e -> {
+            System.out.println("Create pressed");
+            createEvent();
+        });
 
         leftPanel.add(button);
 
         JLabel monthYear = new JLabel( MONTHS.values()[model.getCal().get(Calendar.MONTH)] + " " + model.getCal().get(Calendar.YEAR) );
         monthYear.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        c.weightx = 0.5;
-//        c.gridx = 0;
-//        c.gridy = 1;
-//        leftPanel.add(monthYear, c);
-
         leftPanel.add(monthYear);
-
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        c.weightx = 0.5;
-//        c.gridx = 0;
-//        c.gridy = 2;
-//        leftPanel.add(monthView, c);
 
         leftPanel.add(monthView);
     }
 
-    public void setMonthView(JPanel monthView) {
+    private void setMonthView(JPanel monthView) {
         monthView.add(new JLabel("M"), 0, 0);
         monthView.add(new JLabel("T"), 0, 1);
         monthView.add(new JLabel("W"), 0, 2);
@@ -164,13 +150,18 @@ public class StudentCalendar extends JPanel {
             monthView.add(new JLabel(""));
         }
 
-        while (thisMonth == cal.get(Calendar.MONTH)) {
+        while (thisMonth == currentMonth) {
             JButton buttonDay = new JButton( String.valueOf( cal.get(Calendar.DAY_OF_MONTH)));
-            if(cal.get(Calendar.DAY_OF_MONTH) == model.getCal().get(Calendar.DATE))
+            if(cal.get(Calendar.DAY_OF_MONTH) == currentDay)
                 buttonDay.setBorderPainted(true);
+            else
+                buttonDay.setBorder(BorderFactory.createEmptyBorder());
+            buttonDay.addActionListener(e -> {
+//                currentDay = Integer.parseInt(buttonDay.getText() );
+                System.out.println("Day " + buttonDay.getText() + " is pressed");
+            });
             monthView.add( buttonDay);
             cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + 1);
-
         }
     }
 
@@ -183,5 +174,58 @@ public class StudentCalendar extends JPanel {
         button.setHorizontalAlignment(SwingConstants.CENTER);
         button.setOpaque(true);
         return button;
+    }
+
+    private void createEvent() {
+        JPanel prompt = new JPanel();
+
+        JTextField date = new JTextField(model.getDate(), 6);
+        JTextField timeBegins = new JTextField("14:30", 3);
+        JTextField timeEnds = new JTextField("16:00", 3);
+        JLabel time = new JLabel("Enter Title");
+
+        prompt.add(time);
+        prompt.add(date);
+        prompt.add(timeBegins);
+        prompt.add(timeEnds);
+        String title = JOptionPane.showInputDialog(prompt);
+
+        if(title == null) {
+            System.out.println("Event creating canceled");
+            return;
+        } else if(model.checkConflict(date.getText(), timeBegins.getText(), timeEnds.getText())) {
+            JOptionPane.showMessageDialog(new JFrame(), "Time conflicts with another event, try different time.");
+            createEvent();
+        } else {
+            model.createEvent(title, date.getText(), timeBegins.getText(), timeEnds.getText());
+            JOptionPane.showMessageDialog(new JFrame(), "Event successfully created");
+            System.out.println("Event created: " + title + ", " + date.getText() + ", " + timeBegins.getText());
+        }
+    }
+
+    private void setEventsPanel(JPanel eventsPanel) {
+
+        eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
+
+        JPanel eventHolder;
+
+        for(int c = 0; c < 6; c++) {
+            eventHolder = new JPanel(new FlowLayout());
+            JPanel timeCell = new JPanel();
+
+            timeCell.add(new JLabel(c + 5 + " am"));
+            timeCell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            eventHolder.add(timeCell);
+            eventHolder.add(new JLabel("PLACEHOLDER"));
+            eventHolder.setAlignmentX(Component.LEFT_ALIGNMENT);
+            eventHolder.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            eventsPanel.add(eventHolder);
+        }
+
+        eventsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    }
+
+    public JButton getQuitButton() {
+        return quitButton;
     }
 }

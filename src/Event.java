@@ -28,6 +28,14 @@ public class Event {
 
     }
 
+    /**
+     * Overriden public constructor for multiple parameters
+     * @param _title of event
+     * @param _date of event
+     * @param _time of event
+     * @param _id is time in milliseconds
+     */
+
     public Event(String _title, String _date, String _time, long _id) {
 
 
@@ -42,6 +50,15 @@ public class Event {
         setTime(_time);
     }
 
+    /**
+     * Access time in milliseconds
+     * @return time in milliseconds
+     */
+
+    public Long getTimeInMillis() {
+        return calendar.getTimeInMillis();
+    }
+
     private void setTime(String time) {
         String temp [] = time.split("-");
         eventBegins = Integer.parseInt( temp[0].replaceAll(":", "") );
@@ -50,7 +67,27 @@ public class Event {
         } catch (Exception e) {
             eventBegins = 0;
         }
+    }
 
+    /**
+     * Returns time in string
+     * @return string time
+     */
+    public String getTime() {
+        return time;
+    }
+
+    /**
+     * Accesses title of the event
+     * @return title of event
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String toString() {
+        return time + "," + title + "," + eventBegins + "-" + eventEnds;
     }
 
     public Integer getEventBegins() {
@@ -65,13 +102,17 @@ public class Event {
         return format.format(calendar.getTime());
     }
 
-    public boolean checkConflict(String time) {
+    /**
+     * Check for conflict
+     * @return true is there is no conflict
+     */
+    public boolean checkConflict(String timeBeg, String timeEnd) {
         if(eventEnds == 0) return false;
         String temp [] = time.split("-");
         int a, b;
-        a = Integer.parseInt( temp[0].replaceAll(":", "") );
+        a = Integer.parseInt( timeBeg.replaceAll(":", "") );
         try {
-            b = Integer.parseInt( temp[1].replaceAll(":", "") );
+            b = Integer.parseInt( timeEnd.replaceAll(":", "") );
             if(b == 0) {
                 return (a > eventBegins && a < eventEnds);
             } else return (a > eventBegins && a < eventEnds) || (b > eventBegins && b < eventEnds);
