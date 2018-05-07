@@ -1,11 +1,7 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Model {
 
@@ -17,6 +13,7 @@ public class Model {
     public Model() {
         cal = new GregorianCalendar();
         events = new HashMap<>();
+        loadEvents();
     }
 
     public void moveToNextDay() {
@@ -80,6 +77,55 @@ public class Model {
 
     public Map<String, Event> getEvents() {
         return events;
+    }
+
+    public ArrayList<Event> getDayEvents(String date) {
+        ArrayList<Event> dayEvents = new ArrayList<>();
+        for(Event event: events.values()) {
+            if(event.getDate().equals(date))
+                dayEvents.add(event);
+        }
+
+        return dayEvents;
+    }
+
+    public ArrayList<Event> getDayEvents() {
+        SimpleDateFormat format = new SimpleDateFormat(FORMAT1);
+        String date = format.format( cal.getTime() );
+        ArrayList<Event> dayEvents = new ArrayList<>();
+
+        for(Event event: events.values()) {
+            if(event.getDate().equals(date))
+                dayEvents.add(event);
+        }
+
+        return dayEvents;
+    }
+
+    /**
+     * Loads events from events.txt
+     */
+    public void loadEvents() {
+
+        File f = new File("events.txt");
+        if( f.exists() ) {
+            String [] temp;
+            try {
+                List<String> lines = Files.readAllLines(f.toPath());
+                for(String line: lines) {
+                    temp = line.split(",");
+                    events.put(temp[0], new Event(temp) );
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
+        } else {
+            System.out.println("This is first run, not events created yet");
+        }
+
+        System.out.println("Events successfully loaded");
     }
 
     public void saveEvents() {

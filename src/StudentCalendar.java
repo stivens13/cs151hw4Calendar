@@ -3,6 +3,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -24,9 +25,9 @@ public class StudentCalendar extends JPanel implements ChangeListener{
     int currentMonth;
     int currentDay;
 
-    public StudentCalendar() {
+    public StudentCalendar(Model _model) {
 
-        model = new Model();
+        model = _model;
 
         currentDay = model.getCurrentDay();
         currentMonth = model.getCurrentMonth();
@@ -83,10 +84,17 @@ public class StudentCalendar extends JPanel implements ChangeListener{
 
         leftButton.addActionListener(e -> {
             model.moveToPrevDay();
+            if(currentMonth != model.getCurrentMonth()) {
+                currentMonth = model.getCurrentMonth();
+            }
             repaint();
         });
+
         rightButton.addActionListener(e -> {
             model.moveToNextDay();
+            if(currentMonth != model.getCurrentMonth()) {
+                currentMonth = model.getCurrentMonth();
+            }
             repaint();
         });
 
@@ -150,15 +158,17 @@ public class StudentCalendar extends JPanel implements ChangeListener{
             monthView.add(new JLabel(""));
         }
 
-        while (thisMonth == currentMonth) {
+        while (currentMonth == cal.get(Calendar.MONTH)) {
             JButton buttonDay = new JButton( String.valueOf( cal.get(Calendar.DAY_OF_MONTH)));
-            if(cal.get(Calendar.DAY_OF_MONTH) == currentDay)
+            if(cal.get(Calendar.DAY_OF_MONTH) == model.getCal().get(Calendar.DATE))
                 buttonDay.setBorderPainted(true);
             else
                 buttonDay.setBorder(BorderFactory.createEmptyBorder());
             buttonDay.addActionListener(e -> {
-//                currentDay = Integer.parseInt(buttonDay.getText() );
+//                model.setDate(currentMonth, currentDay);
+                currentDay = Integer.parseInt(buttonDay.getText());
                 System.out.println("Day " + buttonDay.getText() + " is pressed");
+                repaint();
             });
             monthView.add( buttonDay);
             cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + 1);
@@ -209,11 +219,19 @@ public class StudentCalendar extends JPanel implements ChangeListener{
 
         JPanel eventHolder;
 
+        ArrayList<Event> dayEvents = model.getDayEvents();
+
         for(int c = 0; c < 6; c++) {
             eventHolder = new JPanel(new FlowLayout());
             JPanel timeCell = new JPanel();
+            JLabel eventTitle = new JLabel();
+            for(Event event: dayEvents) {
+                if(event.getEventBegins() == c) {
+                    eventTitle.setText(event.getTime());
+                }
+            }
 
-            timeCell.add(new JLabel(c + 5 + " am"));
+            timeCell.add(eventTitle);
             timeCell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             eventHolder.add(timeCell);
             eventHolder.add(new JLabel("PLACEHOLDER"));
